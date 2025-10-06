@@ -11,11 +11,12 @@ public class Main {
 
         try {
             em.getTransaction().begin();
+            AccountDAO accountDAO = new AccountDAO(emf);
 
             Account a1 = new Account(1000);
             Account a2 = new Account(2000);
-            em.persist(a1);
-            em.persist(a2);
+            accountDAO.create(a1);
+            accountDAO.create(a2);
 
             em.getTransaction().commit();
 
@@ -23,10 +24,16 @@ public class Main {
             System.out.println("Account 1 - Number: " + a1.getNumber() + ", Balance: " + a1.getBalance());
             System.out.println("Account 2 - Number: " + a2.getNumber() + ", Balance: " + a2.getBalance());
 
-            AccountDAO accountDAO = new AccountDAO(emf);
             accountDAO.search(1L);
 
-            accountDAO.transfer(a1.getNumber().intValue(), a2.getNumber().intValue(), 420.69);
+            accountDAO.transfer(1,2, 420.69);
+            accountDAO.search(1L);
+            accountDAO.search(2L);
+
+            accountDAO.transfer(2,1, 69.42);
+            accountDAO.search(1L);
+            accountDAO.search(2L);
+
         } finally {
             em.close();
             emf.close();

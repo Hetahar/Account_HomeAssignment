@@ -15,10 +15,19 @@ public class AccountDAO {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
-        tx.begin();
-        em.persist(account);
-        tx.commit();
-        em.close();
+        try {
+            tx.begin();
+            em.persist(account);
+            tx.commit();
+        } catch (OptimisticLockException e) {
+            if (tx.isActive()) {
+                System.out.println("Create failed due to concurrent modification. Please retry.");
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
     }
 
     public void delete(Account account) {
